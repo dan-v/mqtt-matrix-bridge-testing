@@ -1,0 +1,37 @@
+version: "3"
+services:
+  matrix-server-init:
+    image: matrixdotorg/synapse:latest
+    environment:
+      - SYNAPSE_SERVER_NAME=my.matrix.host
+      - SYNAPSE_REPORT_STATS=no
+    volumes:
+      - synapse-data:/data
+    command: generate
+  matrix-server:
+    depends_on:
+      - matrix-server-init
+    image: matrixdotorg/synapse:latest
+    ports:
+      - "8008:8008"
+    volumes:
+      - synapse-data:/data
+  mqtt-server:
+    image: eclipse-mosquitto:latest
+    volumes:
+      - ./mosquitto-no-auth.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - "1883:1883"
+  dev:
+    depends_on:
+      - matrix-server
+      - mqtt-server
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+volumes:
+  synapse-data: {}
+networks: 
+  default: 
+    external: 
+      name: dev-testing

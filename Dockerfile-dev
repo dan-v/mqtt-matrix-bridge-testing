@@ -1,0 +1,13 @@
+FROM ubuntu:latest
+
+ENV PATH="/usr/local/go/bin:${PATH}"
+
+RUN apt update -y && \
+apt install -y wget git && \
+wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz && \
+tar xvf go1.16.3.linux-amd64.tar.gz && \
+mv go /usr/local && rm -f go1.16.3.linux-amd64.tar.gz
+
+COPY ./dev-init.sh /init.sh
+
+CMD /init.sh
